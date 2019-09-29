@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">Активити</string>
+  <string name="app_name">Активити</string>
+  <string name="settings">Тохиргоо</string>
+  <string name="about">Тухай</string>
+  <string name="title_activity_about">Инфо</string>
+  <string name="example">Жишээ</string>
+  <string name="name">Нэр</string>
+  <string name="age">Нас</string>
+  <string name="ok">OK</string>
+  <string name="cancel">Cancel</string>
 </resources>
