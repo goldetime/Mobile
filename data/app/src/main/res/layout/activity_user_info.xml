@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+  <TextView
+      android:id="@id/fname"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:hint="Нэр" />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:orientation="horizontal"
+      android:layout_height="50dp">
+    <EditText
+        android:id="@id/e_age"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:hint="Нас" />
+    <EditText
+        android:id="@id/e_sex"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:hint="Хүйс" />
+    <EditText
+        android:id="@id/e_phone"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:hint="Дугаар" />
+  </LinearLayout>
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:orientation="horizontal"
+      android:layout_height="50dp">
+
+    <EditText
+        android:id="@id/e_year"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:hint="Жил" />
+    <EditText
+        android:id="@id/e_month"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:hint="Сар" />
+    <EditText
+        android:id="@id/e_day"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:hint="Өдөр" />
+  </LinearLayout>
+
+  <Button
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Төрсөн өдөр"
+      android:onClick="onClick" />
+  
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:orientation="horizontal"
+      android:layout_height="wrap_content">
+    <Button
+        android:id="@id/save"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="save" />
+
+    <Button
+        android:id="@+id/edit"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="edit" />
+
+    <Button
+        android:id="@id/cancel"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="cancel" />
+  </LinearLayout>
+</LinearLayout>
