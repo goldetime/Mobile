@@ -6,7 +6,9 @@
               android:orientation="vertical">
 
   <TextView
-      android:id="@id/fname"
+      android:id="@+id/fname"
+      android:textSize="30sp"
+      android:typeface="serif"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:hint="Нэр" />
@@ -65,21 +67,21 @@
       android:orientation="horizontal"
       android:layout_height="wrap_content">
     <Button
-        android:id="@id/save"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="save" />
-
-    <Button
         android:id="@+id/edit"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="edit" />
 
     <Button
-        android:id="@id/cancel"
+        android:id="@+id/change"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:text="cancel" />
+        android:text="change password" />
+
+    <Button
+        android:id="@+id/close"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="close" />
   </LinearLayout>
 </LinearLayout>

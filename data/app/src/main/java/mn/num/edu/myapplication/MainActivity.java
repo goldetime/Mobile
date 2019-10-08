@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
   private static final int REQUEST_CODE_1 = 1;
 	private static final int REQUEST_CODE_2 = 2;
+	public static final String PREFS_NAME = "pref";
+	SharedPreferences s;
   private EditText eid;
   private EditText fname, lname;
   public DatabaseHelper helper;
@@ -33,17 +36,26 @@ public class MainActivity extends AppCompatActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+		
+		s = getSharedPreferences(PREFS_NAME, 0);
 
-    helper = (new DatabaseHelper(this));
-    SQLiteDatabase db = helper.getWritableDatabase();
+		helper = (new DatabaseHelper(this));
+		SQLiteDatabase db = helper.getWritableDatabase();
 
-
-    eid = (EditText) findViewById(R.id.id);
+    // eid = (EditText) findViewById(R.id.id);
     fname = (EditText) findViewById(R.id.fname);
+		String ret = s.getString("key", "");
+		if (ret != null)
+			fname.setText(ret);
+		
     lname = (EditText) findViewById(R.id.lname);
 
     login = (Button) findViewById(R.id.login);
     login.setOnClickListener((View v) -> {
+				SharedPreferences.Editor e = s.edit();
+				e.putString("key", fname.getText().toString());
+				e.commit();
+				
 				String id = fname.getText().toString();
 				Cursor result = db.rawQuery("select * from User where f_name = ?", new String[]{id});
 				if (result.getCount() > 0) {
@@ -61,19 +73,19 @@ public class MainActivity extends AppCompatActivity {
           int d = Integer.parseInt(day);
 					
 					if (fname.getText().toString().equals(a) && lname.getText().toString().equals(b)) {
-							  User t = new User(a, b);
-								t.setAge(age);
-								t.setSex(sex);
-								t.setPhone(phone);
-								t.setbDay(y, m, d); 
+						User t = new User(a, b);
+						t.setAge(age);
+						t.setSex(sex);
+						t.setPhone(phone);
+						t.setbDay(y, m, d); 
 								
-								Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
-								intent.putExtra("ser", (Serializable) user);
-								startActivityForResult(intent, REQUEST_CODE_2);
+						Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
+						intent.putExtra("serser", (Serializable) t);
+						startActivityForResult(intent, REQUEST_CODE_2);
           } else
             Toast.makeText(getApplicationContext(), "Нууц үг буруу байна!", Toast.LENGTH_LONG).show();
         } else
-					Toast.makeText(getApplicationContext(), "Бүртгэлгэй байна!", Toast.LENGTH_LONG).show();	
+					Toast.makeText(getApplicationContext(), "Бүртгэлгүй байна!", Toast.LENGTH_LONG).show();
 			});
 
     sign = (Button) findViewById(R.id.sign);
@@ -84,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 				intent.putExtra("seri", (Serializable) user);
 				startActivityForResult(intent, REQUEST_CODE_1);
 			});
-
+		/*
     read = (Button) findViewById(R.id.read);
     read.setOnClickListener((View v) -> {
 				String id = getId();
@@ -101,15 +113,8 @@ public class MainActivity extends AppCompatActivity {
     delete.setOnClickListener((View v) -> {
 				db.delete("User", "id = ?", new String[]{getId()});
 			});
+		*/
   }
-
-	private String getName() {
-		return fname.getText().toString();
-	}
-	private String getId() {
-		return eid.getText().toString();
-	}
-
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
@@ -149,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 					
 					Toast.makeText(getApplicationContext(), "registered", Toast.LENGTH_LONG).show();
 				} else {
-						Toast.makeText(getApplicationContext(), "Бүртгэлтэй байна!", Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(), "Бүртгэлтэй байна!", Toast.LENGTH_LONG).show();
 				}
       } catch (Exception e) {
         Log.i("TAG", "aldaa1", e);
@@ -158,35 +163,31 @@ public class MainActivity extends AppCompatActivity {
 
 		if (requestCode == REQUEST_CODE_2 && resultCode == RESULT_OK) {
       try {
+        User t = (User) data.getSerializableExtra("edit_serial");
 				
-      } catch (Exception e) {
+ 				ContentValues updateUser = new ContentValues(6);
+				updateUser.put("age", t.getAge());
+				updateUser.put("sex", t.getSex());
+				updateUser.put("phone", t.getPhone());
+				
+				Date date = t.getbDay();
+				Calendar calendar = new GregorianCalendar();
+				calendar.setTime(date);
+
+				int yr = calendar.get(Calendar.YEAR);
+				int mh = calendar.get(Calendar.MONTH) + 1;
+				int dy = calendar.get(Calendar.DAY_OF_MONTH);
+					
+				updateUser.put("year", yr);
+        updateUser.put("month", mh);
+        updateUser.put("day", dy);
+
+				String id = t.getfName();
+				db.update("User", updateUser, "f_name = ?", new String[]{id});
+				Toast.makeText(getApplicationContext(), "edited", Toast.LENGTH_LONG).show();
+			} catch (Exception e) {
         Log.i("TAG", "aldaa2", e);
       }
     }
   }
 }
-
-// ----------------------------------
-// public void onClick(View v) {
-//   SQLiteDatabase db = helper.getWritableDatabase();
-
-//   switch (v.getId()) {
-// 	case R.id.read:
-// 		displayDatabaseRecord(getId());
-// 		break;
-// 	case R.id.delete:
-// 		db.delete("User", "_ID = ?", new String[]{getId()});
-// 		break;
-// 	case R.id.insert:
-// 		ContentValues newUser = new ContentValues(2);
-// 		newUser.put("FNAME", getName());
-// 		newUser.put("LNAME", getName());
-// 		db.insert("User", null, newUser);
-//     break;
-// 	case R.id.update:
-// 		ContentValues updateName = new ContentValues(1);
-// 		updateName.put("FNAME", getName());
-// 		db.update("User", updateName, "_ID = ?", new String[]{getId()});
-// 		break;
-//   }
-// }

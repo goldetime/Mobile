@@ -108,7 +108,7 @@ public class SignUpActivity extends AppCompatActivity implements DatePicker.OnCl
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
       y.setText(String.valueOf(year));
-      m.setText(String.valueOf(month));
+      m.setText(String.valueOf(month + 1));
       d.setText(String.valueOf(day));
     }
   }

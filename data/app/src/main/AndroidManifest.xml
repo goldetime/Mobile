@@ -10,22 +10,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".UserInfoActivity"
-            android:label="User Info">
-        </activity>
+        <activity android:name=".ChangePasswordActivity"
+            android:label="Change Password" />
 
-        <activity android:name=".SignUpActivity"
-            android:label="Sign Up">
-            >
-        </activity>
+        <activity
+            android:name=".UserInfoActivity"
+            android:label="User Info" />
+
+        <activity
+            android:name=".SignUpActivity"
+            android:label="Sign Up" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

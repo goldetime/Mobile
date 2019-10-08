@@ -15,12 +15,14 @@
       android:id="@+id/e_pass"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:inputType="textPassword"
       android:hint="Нууц үг" />
 
   <EditText
       android:id="@+id/e_repass"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:inputType="textPassword"
       android:hint="Нууц үг давт" />
 
   <LinearLayout
