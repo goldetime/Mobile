@@ -1,7 +1,10 @@
 package mn.num.edu.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,10 +12,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.Serializable;
@@ -43,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
 			DatabaseHelper.MONTH,
 			DatabaseHelper.DAY
 	};
+	TextView temp = null;
+	String str = "";
+	private Button contact;
+	private Button calendar;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -108,6 +118,27 @@ public class MainActivity extends AppCompatActivity {
 				intent.putExtra("seri", (Serializable) user);
 				startActivityForResult(intent, REQUEST_CODE_1);
 			});
+
+		contact = (Button) findViewById(R.id.contact);
+		contact.setOnClickListener((View v) -> {
+			temp = (TextView) findViewById(R.id.textView);
+			str = "";
+			displayContacts();
+			temp.setText(str);
+		});
+
+
+		calendar = (Button) findViewById(R.id.event);
+		calendar.setOnClickListener((View v) -> {
+			temp = (TextView) findViewById(R.id.textView);
+			str = "";
+			try {
+				displayCalendar();
+			} catch (Exception e) {
+				Log.i("Tag", "aldaa", e);
+			}
+			temp.setText(str);
+		});
 		/*
 			read = (Button) findViewById(R.id.read);
 			read.setOnClickListener((View v) -> {
@@ -127,6 +158,42 @@ public class MainActivity extends AppCompatActivity {
 			});
 		*/
   }
+
+	private void displayContacts() {
+		try {
+			ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, 111);
+			ContentResolver cr = getContentResolver();
+			Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+
+			if (cur.getCount() > 0) {
+				while (cur.moveToNext()) {
+					String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+					str += " " + name + "\n";
+				}
+			}
+		} catch (Exception e) {
+			Log.i("Tag", "aldaa", e);
+		}
+	}
+
+	private void displayCalendar() throws Exception {
+		ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_CALENDAR}, 111);
+		// if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+		// TODO something
+		//   return;
+		// }
+
+		ContentResolver cr = getContentResolver();
+		Uri uri = CalendarContract.Events.CONTENT_URI;
+		Cursor cur = cr.query(uri, null, null, null, null);
+		if(cur.getCount() > 0){
+			while(cur.moveToNext()){
+				String title = cur.getString(cur.getColumnIndex(CalendarContract.Events.TITLE));
+				str += " " + title + "\n";
+			}
+		}
+	}
+
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 		
