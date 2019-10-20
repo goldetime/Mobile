@@ -1,14 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".StudentFragment">
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context=".StudentFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+
     <TextView
+        android:text="Нэмэлт мэдээлэл"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"/>
 
+    <TextView
+        android:id="@+id/info"
+        android:textSize="20sp"
+        android:typeface="serif"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    
+    <EditText
+        android:id="@+id/e_school"
+        android:hint="Сургууль"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/e_class"
+        android:hint="Анги"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:orientation="horizontal"
+      android:layout_height="50dp">
+    <EditText
+        android:id="@+id/e_level"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:hint="Курс" />
+    <EditText
+        android:id="@+id/e_gpa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Голч дүн" />
+  </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+      <Button
+          android:id="@+id/save"
+          android:layout_height="wrap_content"
+          android:layout_width="wrap_content"
+          android:text="save" />
+
+      <Button
+          android:id="@+id/cancel"
+          android:layout_height="wrap_content"
+          android:layout_width="wrap_content"
+          android:text="cancel" />
+    </LinearLayout>
+  </LinearLayout>
 </FrameLayout>

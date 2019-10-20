@@ -1,14 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".InfoFragment">
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context=".InfoFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+
     <TextView
+        android:text="Үндсэн мэдээлэл"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"/>
 
+    <EditText
+        android:id="@+id/e_lname"
+        android:hint="Овог"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/e_fname"
+        android:hint="Нэр"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/e_age"
+        android:hint="Нас"
+        android:inputType="numberDecimal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/e_sex"
+        android:hint="Хүйс"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:text="Мэргэжил"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <RadioGroup android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_group"
+                android:orientation="horizontal">
+      <RadioButton android:id="@+id/r_teacher"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="teacher"/>
+
+      <RadioButton android:id="@+id/r_student"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="student"/>
+    </RadioGroup>
+  </LinearLayout>
 </FrameLayout>
