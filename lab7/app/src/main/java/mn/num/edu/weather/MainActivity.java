@@ -3,6 +3,9 @@ package mn.num.edu.weather;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,22 +42,29 @@ public class MainActivity extends AppCompatActivity {
 	TodayWeatherTask todayWeatherTask;
 	FindCitiesByNameTask findCitiesByNameTask;
 
-
-
 	private List<Weather> longTermTodayWeather = new ArrayList<>();
 	private List<Weather> todayCitiesWeather = new ArrayList<>();
 	private List<Weather> longTermWeather = new ArrayList<>();
+
+	private EditText fcity;
+	public Button pos;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		fcity = (EditText) findViewById(R.id.fcity);
+		pos = (Button) findViewById(R.id.pos);
+		pos.setOnClickListener((View v) -> {
+			findCitiesByNameTask = new FindCitiesByNameTask();
+			findCitiesByNameTask.execute(fcity.getText().toString());
+		});
+
 		todayWeatherTask = new TodayWeatherTask();
 		todayWeatherTask.execute();
 
-		findCitiesByNameTask = new FindCitiesByNameTask();
-		findCitiesByNameTask.execute();
+
 
 		tabLayout = (TabLayout) findViewById(R.id.tabs);
 //		tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -176,13 +186,14 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	class FindCitiesByNameTask extends AsyncTask<Void, Void, String> {
+	class FindCitiesByNameTask extends AsyncTask<String, Void, String> {
 		String data = "";
 
 		@Override
-		protected String doInBackground(Void... voids) {
+		protected String doInBackground(String... str) {
 			try {
-				URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=Ulaanbaatar&appid=d2d4cc4d7ed3d6940c856916acce29c9&units=metric");
+				String f = str[0];
+				URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=" + f + "&appid=d2d4cc4d7ed3d6940c856916acce29c9&units=metric");
 
 				HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
 				InputStream inputStream = httpConnection.getInputStream();
