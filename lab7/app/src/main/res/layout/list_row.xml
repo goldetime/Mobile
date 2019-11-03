@@ -13,7 +13,7 @@
       android:background="?android:attr/listDivider" />
 
   <LinearLayout
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginLeft="16dp"
       android:layout_marginTop="16dp"
@@ -42,5 +42,13 @@
       tools:text="0 °C"
       android:textSize="22sp"
       android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/itemCity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text=""
+        android:textSize="22sp"
+        android:layout_marginTop="8dp"/>
   </LinearLayout>
 </LinearLayout>

@@ -13,14 +13,16 @@ public class WeatherViewHolder extends RecyclerView.ViewHolder {
   public TextView itemDate;
   public TextView itemDescription;
   public TextView itemTemperature;
+  public TextView itemCity;
   public View lineView;
 
   // view = itemView
   public WeatherViewHolder(@NonNull View view) {
     super(view);
-    //this.itemDate = (TextView) view.findViewById(R.id.itemDate);
-    //this.itemTemperature = (TextView) view.findViewById(R.id.itemTemperature);
-    //this.itemDescription = (TextView) view.findViewById(R.id.itemDescription);
-    //this.lineView = view.findViewById(R.id.lineView);
+    this.itemDate = (TextView) view.findViewById(R.id.itemDate);
+    this.itemTemperature = (TextView) view.findViewById(R.id.itemTemperature);
+    this.itemDescription = (TextView) view.findViewById(R.id.itemDescription);
+    this.itemCity = (TextView) view.findViewById(R.id.itemCity);
+    this.lineView = view.findViewById(R.id.lineView);
   }
 }

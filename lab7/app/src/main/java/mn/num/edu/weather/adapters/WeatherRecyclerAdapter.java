@@ -37,8 +37,9 @@ public class WeatherRecyclerAdapter extends RecyclerView.Adapter<WeatherViewHold
 	public void onBindViewHolder(WeatherViewHolder customViewHolder, int i) {
 		Weather weatherItem = itemList.get(i);
 
+
 		// Description
-		customViewHolder.itemDescription.setText(weatherItem.getDescription().substring(0, 1).toUpperCase());
+		customViewHolder.itemDescription.setText(weatherItem.getDescription());
 
 		// Temperature
 		float temperature = Float.parseFloat(weatherItem.getTemperature());
@@ -58,6 +59,9 @@ public class WeatherRecyclerAdapter extends RecyclerView.Adapter<WeatherViewHold
 		}
 
 		customViewHolder.itemDate.setText(dateString);
+
+		// City
+		customViewHolder.itemCity.setText(weatherItem.getCity());
 	}
 
 	@Override
