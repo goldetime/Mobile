@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="mn.num.edu.myapplication">
+    package="mn.num.edu.myapp">
+
+    <!--    PERMISSIONS-->
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <!--/   PERMISSIONS-->
 
     <application
         android:allowBackup="true"
@@ -10,21 +15,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-      <provider android:name="NameProvider"
-                android:authorities="mn.num.edu.NameProvider"/>
 
-        <activity android:name=".ChangePasswordActivity"
+        <activity android:name="mn.num.edu.myapp.ChangePasswordActivity"
             android:label="Change Password" />
 
         <activity
-            android:name=".UserInfoActivity"
+            android:name="mn.num.edu.myapp.UserInfoActivity"
             android:label="User Info" />
 
         <activity
-            android:name=".SignUpActivity"
+            android:name="mn.num.edu.myapp.SignUpActivity"
             android:label="Sign Up" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name="mn.num.edu.myapp.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

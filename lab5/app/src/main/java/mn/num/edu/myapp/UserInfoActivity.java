@@ -1,4 +1,4 @@
-package mn.num.edu.myapplication;
+package mn.num.edu.myapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
@@ -7,7 +7,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +19,6 @@ import android.widget.Toast;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-//import static mn.num.edu.myapplication.MainActivity.helper;
 
 public class UserInfoActivity extends AppCompatActivity implements DatePicker.OnClickListener {
 
@@ -30,7 +28,6 @@ public class UserInfoActivity extends AppCompatActivity implements DatePicker.On
 	Button edit, change, close;
 	User user = new User();
 	private static final int REQUEST_CODE_3 = 3;
-	public DatabaseHelper helper;
 	String tmp;
 	User t;
 
@@ -40,12 +37,8 @@ public class UserInfoActivity extends AppCompatActivity implements DatePicker.On
     setContentView(R.layout.activity_user_info);
 
     try {
-			helper = (new DatabaseHelper(this));
-
-			
 			Intent r = getIntent();
 			t = (User) r.getSerializableExtra("serser");
-
 
 			name = (TextView) findViewById(R.id.fname);
 			if (t.getfName() != null)
@@ -148,16 +141,20 @@ public class UserInfoActivity extends AppCompatActivity implements DatePicker.On
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		SQLiteDatabase db = helper.getWritableDatabase();
+		
 		if (requestCode == REQUEST_CODE_3 && resultCode == RESULT_OK) {
 			try {
 				String u = data.getStringExtra("newpass");
 				tmp = u;
-				ContentValues updatePass = new ContentValues(1);
+				ContentValues updatePass = new ContentValues();
 				updatePass.put("l_name", u);
 				String id = name.getText().toString();
-				//db.update("User", updatePass, "f_name = ?", new String[]{id});
-        int r = getContentResolver().update(NameProvider.CONTENT_URI, updatePass, "f_name = ?", new String[] {id});
+				
+				// db.update("User", updatePass, "f_name = ?", new String[]{id});
+				// ^
+				// |
+				// v
+			//	int r = getContentResolver().update(NameProvider.CONTENT_URI, updatePass, "f_name = ?", new String[] {id});
 				Toast.makeText(getApplicationContext(), "Password changed!", Toast.LENGTH_LONG).show();
 			} catch(Exception e) {
 				Log.i("Tag", "aldaaa", e);

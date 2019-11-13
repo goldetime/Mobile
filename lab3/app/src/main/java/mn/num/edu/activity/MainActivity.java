@@ -54,27 +54,27 @@ public class MainActivity extends AppCompatActivity {
 
 		x = findViewById(R.id.button3);
 		x.setOnClickListener((View v) -> {
-      Intent dial = new Intent();
-      dial.setAction(android.content.Intent.ACTION_DIAL);
-      dial.setData(Uri.parse("tel:1234567"));
-      startActivity(dial);
-    });
+				Intent dial = new Intent();
+				dial.setAction(android.content.Intent.ACTION_DIAL);
+				dial.setData(Uri.parse("tel:1234567"));
+				startActivity(dial);
+			});
 
 		y = findViewById(R.id.button4);
 		y.setOnClickListener((View v) -> {
-      String q = "google.com";
-      Intent intent = new Intent(Intent.ACTION_WEB_SEARCH );
-      intent.putExtra(SearchManager.QUERY, q);
-      startActivity(intent);
-    });
+				String q = "google.com";
+				Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+				intent.putExtra(SearchManager.QUERY, q);
+				startActivity(intent);
+			});
 
 		z = findViewById(R.id.button5);
 		z.setOnClickListener((View v) -> {
-      Intent read1=new Intent();
-      read1.setAction(android.content.Intent.ACTION_VIEW);
-      read1.setData(ContactsContract.Contacts.CONTENT_URI);
-      startActivity(read1);
-    });
+				Intent i = new Intent();
+				i.setAction(android.content.Intent.ACTION_VIEW);
+				i.setData(ContactsContract.Contacts.CONTENT_URI);
+				startActivity(i);
+			});
   }
 
   @Override

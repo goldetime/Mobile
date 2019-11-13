@@ -1,4 +1,4 @@
-package mn.num.edu.myapplication;
+package mn.num.edu.myapp;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,13 +29,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
   public void onCreate(SQLiteDatabase nameDb) {
     nameDb.execSQL("CREATE TABLE " + NAMES_TABLE + " ("
         + ID + " INTEGER PRIMARY KEY,"
-        + NAME + " TEXT,"
-        + L_NAME + " TEXT,"
-        + AGE + " TEXT,"
-        + SEX + " TEXT,"
+				+ NAME + " TEXT,"
+				+ L_NAME + " TEXT,"
+				+ AGE + " TEXT,"
+				+ SEX + " TEXT,"
         + PHONE + " TEXT,"
-        + YEAR + " TEXT,"
-        + MONTH + " TEXT,"
+				+ YEAR + " TEXT,"
+				+ MONTH + " TEXT,"
         + DAY + " TEXT"
         + ");");
     // nameDb.execSQL("INSERT INTO User ( name) VALUES ('Roger' );");

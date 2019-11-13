@@ -30,24 +30,24 @@ public class MainActivity extends AppCompatActivity {
     boolean checked = ((CheckBox) view).isChecked();
 
     switch(view.getId()) {
-      case R.id.c_cprog:
-        if (checked)
-          Toast.makeText(getApplicationContext(), "c", Toast.LENGTH_LONG).show();
-        break;
-      case R.id.c_cplusplus:
-        if (checked)
-          Toast.makeText(getApplicationContext(), "c++", Toast.LENGTH_LONG).show();
-        break;
-      case R.id.c_java:
-        if (checked)
-          Toast.makeText(getApplicationContext(), "java", Toast.LENGTH_LONG).show();
-        break;
-      case R.id.c_linux:
-        if (checked)
-          Toast.makeText(getApplicationContext(), "linux", Toast.LENGTH_LONG).show();
-        break;
-      default:
-          break;
+		case R.id.c_cprog:
+			if (checked)
+				Toast.makeText(getApplicationContext(), "c", Toast.LENGTH_LONG).show();
+			break;
+		case R.id.c_cplusplus:
+			if (checked)
+				Toast.makeText(getApplicationContext(), "c++", Toast.LENGTH_LONG).show();
+			break;
+		case R.id.c_java:
+			if (checked)
+				Toast.makeText(getApplicationContext(), "java", Toast.LENGTH_LONG).show();
+			break;
+		case R.id.c_linux:
+			if (checked)
+				Toast.makeText(getApplicationContext(), "linux", Toast.LENGTH_LONG).show();
+			break;
+		default:
+			break;
     }
   }
 }

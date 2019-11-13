@@ -17,6 +17,11 @@ import com.google.android.material.tabs.TabLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
 	TodayWeatherTask todayWeatherTask;
 	FindCitiesByNameTask findCitiesByNameTask;
+		LongTermLaterWeather longTermLaterWeather;
+
 
 	private List<Weather> longTermTodayWeather = new ArrayList<>();
 	private List<Weather> todayCitiesWeather = new ArrayList<>();
@@ -64,35 +71,7 @@ public class MainActivity extends AppCompatActivity {
 		todayWeatherTask = new TodayWeatherTask();
 		todayWeatherTask.execute();
 
-
-
-		tabLayout = (TabLayout) findViewById(R.id.tabs);
-//		tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-//			@Override
-//			public void onTabSelected(TabLayout.Tab tab) {
-//				switch (tab.getPosition()) {
-//					case 0:
-//						todayWeatherTask = new TodayWeatherTask();
-//						todayWeatherTask.execute();
-//						break;
-//					case 1:
-//						findCitiesByNameTask = new FindCitiesByNameTask();
-//						findCitiesByNameTask.execute();
-//						break;
-//					default:
-//						break;
-//				}
-//			}
-//
-//			@Override
-//			public void onTabUnselected(TabLayout.Tab tab) {
-//			}
-//
-//			@Override
-//			public void onTabReselected(TabLayout.Tab tab) {
-//			}
-//		});
-
+    tabLayout = (TabLayout) findViewById(R.id.tabs);
 		viewPager = (ViewPager) findViewById(R.id.viewPager);
 
 		ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -115,12 +94,6 @@ public class MainActivity extends AppCompatActivity {
 		recyclerViewFragmentLater.setArguments(bundle);
 		viewPagerAdapter.addFragment(recyclerViewFragmentLater, "Later");
 
-		Bundle bundleT = new Bundle();
-		bundleT.putInt("day", 3);
-		RecyclerViewFragment recyclerViewFragmentT = new RecyclerViewFragment();
-		recyclerViewFragmentT.setArguments(bundleT);
-		viewPagerAdapter.addFragment(recyclerViewFragmentT, "add");
-
 		viewPager.setAdapter(viewPagerAdapter);
 		tabLayout.setupWithViewPager(viewPager);
 
@@ -137,16 +110,6 @@ public class MainActivity extends AppCompatActivity {
 		} else {
 			weatherRecyclerAdapter = new WeatherRecyclerAdapter(this, todayCitiesWeather);
 		}
-
-//		if (id == 0) {
-//			weatherRecyclerAdapter = new WeatherRecyclerAdapter(this, todayCitiesWeather);
-//		} else if (id == 1) {
-//			weatherRecyclerAdapter = new WeatherRecyclerAdapter(this, todayCitiesWeather);
-//		} else if (id == 2) {
-//			weatherRecyclerAdapter = new WeatherRecyclerAdapter(this, todayCitiesWeather);
-//		} else {
-//			weatherRecyclerAdapter = new WeatherRecyclerAdapter(this, todayCitiesWeather);
-//		}
 		return weatherRecyclerAdapter;
 	}
 
@@ -156,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		protected String doInBackground(Void... voids) {
 			try {
-				URL url = new URL("https://api.openweathermap.org/data/2.5/forecast?q=Ulaanbaatar&appid=d2d4cc4d7ed3d6940c856916acce29c9&units=metric");
+        URL url = new URL("https://api.openweathermap.org/data/2.5/forecast?q=Ulaanbaatar&appid=d2d4cc4d7ed3d6940c856916acce29c9&units=metric");
 
 				HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
 
@@ -168,9 +131,8 @@ public class MainActivity extends AppCompatActivity {
 					s = bufferedReader.readLine();
 					data += s;
 				}
-				parseTodayJson(data);
 
-//				parse(data);
+				parseTodayJson(data);
 
 			} catch (MalformedURLException e) {
 				Log.i("MAIN", "URLException", e);
@@ -221,6 +183,91 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+  class LongTermLaterWeather extends AsyncTask<Void, Void, String> {
+    String data = "";
+
+    @Override
+    protected String doInBackground(Void... str) {
+      try {
+
+        URL url = new URL("https://api.openweathermap.org/data/2.5/forecast?q=Ulaanbaatar&appid=d2d4cc4d7ed3d6940c856916acce29c9&units=metric&mode=xml");
+
+        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+        InputStream is = httpConnection.getInputStream();
+
+        XmlPullParserFactory parserFactory;
+        try {
+          parserFactory = XmlPullParserFactory.newInstance();
+          XmlPullParser parser = parserFactory.newPullParser();
+
+          parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+          parser.setInput(is, null);
+
+          int eventType = parser.getEventType();
+          while(eventType != XmlPullParser.END_DOCUMENT) {
+            Weather weather = null;
+            Calendar cal = null;
+
+            String eltName = null;
+            switch (eventType) {
+              case XmlPullParser.START_TAG:
+                eltName = parser.getName();
+                if ("time".equals(eltName)) {
+                  weather = new Weather();
+                  weather.setDate(parser.getAttributeName(0));
+                  final String dateMsString = parser.getAttributeName(0) + "000";
+                  cal = Calendar.getInstance();
+                  cal.setTimeInMillis(Long.parseLong(dateMsString));
+                } else if ("temperature".equals(eltName)) {
+                  weather.setTemperature(parser.nextText());
+                } else if ("clouds value".equals(eltName)) {
+                  weather.setDescription(parser.nextText());
+                } else if ("name".equals(eltName)) {
+                  weather.setCity(parser.nextText());
+                }
+
+
+                Calendar today = Calendar.getInstance();
+                today.set(Calendar.HOUR_OF_DAY, 0);
+                today.set(Calendar.MINUTE, 0);
+                today.set(Calendar.SECOND, 0);
+                today.set(Calendar.MILLISECOND, 0);
+
+                Calendar tomorrow = (Calendar) today.clone();
+                tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+
+                if (cal.before(tomorrow)) {
+                  //longTermWeather.add(weather);
+                } else {
+                  longTermWeather.add(weather);
+                }
+                break;
+            }
+            eventType = parser.next();
+          }
+        } catch (XmlPullParserException e) {
+          Log.i("Main", "xml", e);
+        }
+
+      } catch (MalformedURLException e) {
+        Log.i("MAIN", "URLException", e);
+      } catch (IOException e) {
+        Log.i("MAIN", "URLException", e);
+      }
+      return data;
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+      System.out.println("ok2");
+    }
+  }
+
+	private void parseXML(String result) {
+
+
+  }
+
 	private void parse(String result) {
 		try {
 			JSONObject reader = new JSONObject(result);
@@ -258,7 +305,6 @@ public class MainActivity extends AppCompatActivity {
 				weather.setTemperature(main.getString("temp"));
 				weather.setDescription(listItem.optJSONArray("weather").getJSONObject(0).getString("description"));
 				weather.setCity(reader.getJSONObject("city").getString("name"));
-//				weather.setCity("mgl");
 
 				final String dateMsString = listItem.getString("dt") + "000";
 				Calendar cal = Calendar.getInstance();
