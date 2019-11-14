@@ -1,4 +1,4 @@
-package mn.num.edu.maps;
+package mn.num.maps;
 
 import org.junit.Test;
 

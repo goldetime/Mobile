@@ -1,4 +1,4 @@
-package mn.num.edu.maps;
+package mn.num.maps;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
     // Context of the app under test.
     Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-    assertEquals("mn.num.edu.maps", appContext.getPackageName());
+    assertEquals("mn.num.maps", appContext.getPackageName());
   }
 }
