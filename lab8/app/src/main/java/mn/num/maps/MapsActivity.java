@@ -1,24 +1,15 @@
 package  mn.num.maps;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 
-import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.webkit.WebSettings;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -26,6 +17,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
@@ -33,14 +25,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,22 +45,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
   private static final String TAG = MapsActivity.class.getSimpleName();
   public GoogleMap mMap;
-  Marker tmarker = null;
-  private CameraPosition mCameraPosition;
 
   private FusedLocationProviderClient mFusedLocationProviderClient;
 
   private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
   private static final int DEFAULT_ZOOM = 15;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-	private static final int PERMISSIONS_REQUEST_ACCESS_OTHER = 2;
   private boolean mLocationPermissionGranted;
 
   private Location mLastKnownLocation;
-
-  // Keys for storing activity state.
-  private static final String KEY_CAMERA_POSITION = "camera_position";
-  private static final String KEY_LOCATION = "location";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +67,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     // Build the map.
     SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
     mapFragment.getMapAsync(this);
-
   }
 
   @Override
@@ -144,6 +126,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
   private void markerM(GoogleMap mMap) {
     mMap.setOnMapLongClickListener((LatLng pos) -> {
       Marker marker = mMap.addMarker(new MarkerOptions().position(pos));
+      marker.setDraggable(true);
       String infoTitle = marker.getTitle();
       markers.add(marker);
 
@@ -166,13 +149,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
       }
     });
 
-    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+    mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
       @Override
-      public boolean onMarkerClick(Marker marker) {
+      public void onMarkerDragStart(Marker marker) {
         markers.remove(marker);
         marker.remove();
         measureDistance();
-        return true;
+      }
+
+      @Override
+      public void onMarkerDrag(Marker marker) {
+        Log.i(TAG, "run");
+      }
+
+      @Override
+      public void onMarkerDragEnd(Marker marker) {
+        Log.i(TAG, "end");
       }
     });
   }
