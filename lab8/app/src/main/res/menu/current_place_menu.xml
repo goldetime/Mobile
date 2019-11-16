@@ -13,4 +13,7 @@
   <item
       android:id="@+id/option_hybrid"
       android:title="hybrid"/>
+  <item
+      android:id="@+id/option_distance"
+      android:title="distance"/>
 </menu>
