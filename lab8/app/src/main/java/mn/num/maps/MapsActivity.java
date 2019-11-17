@@ -1,6 +1,9 @@
 package  mn.num.maps;
 
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 
@@ -16,9 +19,7 @@ import androidx.core.content.ContextCompat;
 
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -28,6 +29,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -40,6 +43,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
   public static final int MAP_TYPE_SATELLITE = 2;
   public static final int MAP_TYPE_TERRAIN = 3;
   public static final int MAP_TYPE_HYBRID = 4;
+
+  int i = 0;
 
   List<Marker> markers = new ArrayList<Marker>();
 
@@ -54,19 +59,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
   private boolean mLocationPermissionGranted;
 
   private Location mLastKnownLocation;
+  private LocationRequest locationRequest;
+
+  static MapsActivity instance;
+
+  public List<LatLng> points = new ArrayList<LatLng>();
+  public List<LatLng> tarr = new ArrayList<LatLng>();
+  public PolylineOptions lineOptions = null;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
     setContentView(R.layout.activity_maps);
 
-    // Construct a FusedLocationProviderClient.
+    instance = this;
+
     mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-    // Build the map.
     SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
     mapFragment.getMapAsync(this);
+  }
+
+  public static MapsActivity getInstance() {
+    return instance;
   }
 
   @Override
@@ -86,8 +101,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
       mMap.setMapType(MAP_TYPE_TERRAIN);
     else if (i == R.id.option_hybrid)
       mMap.setMapType(MAP_TYPE_HYBRID);
-    else if (i == R.id.option_distance)
-        measureDistance();
+    else if (i == R.id.option_distance) {
+      measureDistance();
+    }
     return true;
   }
 
@@ -97,10 +113,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     mMap.getUiSettings().setZoomControlsEnabled(true);
 
     getLocationPermission();
+
     updateLocationUI();
-    getDeviceLocation();
+    //getDeviceLocation();
+
+    updateLocation();
+
+    mMap.setMyLocationEnabled(true);
 
     markerM(mMap);
+
+//    tarr.add(new LatLng(47.921608, 106.88595));
+//    tarr.add(new LatLng(47.921609, 106.88596));
+//    tarr.add(new LatLng(47.921612, 106.88599));
+//
+//    lineOptions = new PolylineOptions();
+//    lineOptions.addAll(tarr)
+//        .width(10)
+//        .color(Color.RED);
+//
+//    mMap.addPolyline(lineOptions);
   }
 
   private void measureDistance() {
@@ -127,26 +159,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     mMap.setOnMapLongClickListener((LatLng pos) -> {
       Marker marker = mMap.addMarker(new MarkerOptions().position(pos));
       marker.setDraggable(true);
-      String infoTitle = marker.getTitle();
       markers.add(marker);
-
-      int n = markers.size();
-
-      if (n >= 2) {
-        float[] results = new float[1];
-
-        double Alat = markers.get(n - 2).getPosition().latitude;
-        double Alon = markers.get(n - 2).getPosition().longitude;
-
-        double Blat = markers.get(n - 1).getPosition().latitude;
-        double Blon = markers.get(n - 1).getPosition().longitude;
-
-        Location.distanceBetween(Alat, Alon, Blat, Blon, results);
-
-        String r = String.valueOf(Math.ceil(results[0]));
-        r += "m";
-        Toast.makeText(this, r, Toast.LENGTH_LONG).show();
-      }
+      tarr.add(pos);
+      measureDistance();
     });
 
     mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
@@ -169,6 +184,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     });
   }
 
+  /*
   private void getDeviceLocation() {
     try {
       if (mLocationPermissionGranted) {
@@ -179,9 +195,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 							if (task.isSuccessful()) {
 								// Set the map's camera position to the current location of the device.
 								mLastKnownLocation = task.getResult();
-								mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-																	new LatLng(mLastKnownLocation.getLatitude(),
-																						 mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
 							} else {
 								Log.e(TAG, "Exception: %s", task.getException());
 								mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
@@ -194,6 +207,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
       Log.e("Exception: %s", e.getMessage());
     }
   }
+  */
 
   private void getLocationPermission() {
     if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
@@ -210,12 +224,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
     mLocationPermissionGranted = false;
     switch (requestCode) {
-		case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+		case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
 			if (grantResults.length > 0
 					&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				mLocationPermissionGranted = true;
 			}
-		}
+      break;
     }
     updateLocationUI();
   }
@@ -237,5 +251,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     } catch (SecurityException e)  {
       Log.e("Exception: %s", e.getMessage());
     }
+  }
+
+  public void updateLocation() {
+    locationRequest = new LocationRequest();
+    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    locationRequest.setInterval(2000);
+    locationRequest.setFastestInterval(1000);
+    locationRequest.setSmallestDisplacement(10f);
+
+    mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+    getLocationPermission();
+
+    mFusedLocationProviderClient.requestLocationUpdates(locationRequest, getPendingInent());
+  }
+
+  private PendingIntent getPendingInent() {
+    Intent i = new Intent(this, LocationService.class);
+    i.setAction(LocationService.ACTION_PROCESS_UPDATE);
+    return PendingIntent.getBroadcast(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
   }
 }
