@@ -160,7 +160,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
       Marker marker = mMap.addMarker(new MarkerOptions().position(pos));
       marker.setDraggable(true);
       markers.add(marker);
-      tarr.add(pos);
       measureDistance();
     });
 
