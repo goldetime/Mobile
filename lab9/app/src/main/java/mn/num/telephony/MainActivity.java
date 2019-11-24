@@ -1,84 +1,98 @@
 package mn.num.telephony;
 
 import android.Manifest;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.EditText;
+import android.widget.TextView;
 
-import androidx.annotation.MainThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends AppCompatActivity {
 
   private Button b;
+  private TextView d;
+  static MainActivity instance;
 
   private boolean mSmsPermissionGranted;
   private static final int PERMISSIONS_REQUEST_SMS = 1;
+
+  public static MainActivity getInstance() {
+    return instance;
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+    instance = this;
     getPermission();
 
-    b = findViewById(R.id.button);
+    d = (TextView) findViewById(R.id.device_info);
 
+    b = (Button) findViewById(R.id.button);
     b.setOnClickListener((View v) -> {
       Intent i = new Intent(this, Telephony.class);
       startActivity(i);
     });
-
-//    b.setOnClickListener((View v) -> {
-//      writeToFile("a.txt", "Real", this);
-//      Snackbar.make(findViewById(android.R.id.content), "write to file", Snackbar.LENGTH_LONG).show();
-//
-//      String r = readFromFile("a.txt", this);
-//      Toast.makeText(this, r, Toast.LENGTH_LONG).show();
-//    });
-
-//    b.setOnClickListener((View v) -> {
-//      writeToFile("a.txt", "Second");
-//
-//      getPermission();
-//
-//      SmsManager sm = SmsManager.getDefault();
-//
-//      Intent s = new Intent(Receiver1.sent_sms);
-//      Intent r = new Intent(Receiver2.receive_sms); // dald  // new Intent(receive_sms);
-//
-//      PendingIntent sentSms = PendingIntent.getBroadcast(MainActivity.this, 0, s, 0);
-//      PendingIntent dSms = PendingIntent.getBroadcast(MainActivity.this, 0, r, 0);
-//      if (mSmsPermissionGranted) {
-//        try {
-//          //sm.sendTextMessage("+97695202601", null, "SEND with receiver real", sentSms, dSms);
-//        } catch (SecurityException e) {
-//          Log.i("TAG", "sec", e);
-//        }
-//      }
-//      Snackbar.make(findViewById(android.R.id.content), "write to file", Snackbar.LENGTH_LONG).show();
-//    });
   }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.main_menu, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    Intent it;
+    int i = item.getItemId();
+    if (i == R.id.option_sms) {
+      it = new Intent(this, SmsActivity.class);
+      startActivity(it);
+    } else if (i == R.id.option_device_info) {
+      d.append("\n");
+      try {
+        d.append(readFromFile(Telephony.DEVICE_INFO, this));
+      } catch (Exception e) {
+
+      }
+
+    }
+    return true;
+  }
+
+  public void writeToFileAppend(String fname, String fcontent, Context context) {
+    FileOutputStream outputStream;
+    try {
+      outputStream = openFileOutput(fname, context.MODE_APPEND);
+      outputStream.write(fcontent.getBytes());
+      outputStream.close();
+    } catch (Exception e) {
+      Log.i("File", "exception", e);
+    }
+  }
+
+
 
   public void writeToFile(String fname, String fcontent, Context context) {
     FileOutputStream outputStream;

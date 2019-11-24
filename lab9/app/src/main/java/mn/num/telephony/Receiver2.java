@@ -9,6 +9,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class Receiver2 extends BroadcastReceiver {
 
   final static String receive_sms = "android.provider.Telephony.SMS_RECEIVED";
@@ -21,7 +25,7 @@ public class Receiver2 extends BroadcastReceiver {
 
     switch (getResultCode()) {
       case AppCompatActivity.RESULT_OK:
-        Toast.makeText(context, "SMS Delivered", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "SMS Delivered!!!", Toast.LENGTH_SHORT).show();
         break;
       case AppCompatActivity.RESULT_CANCELED:
         Toast.makeText(context, "SMS not delivered", Toast.LENGTH_SHORT).show();

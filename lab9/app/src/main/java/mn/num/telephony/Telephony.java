@@ -11,18 +11,38 @@ import android.telephony.CellLocation;
 import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 
 public class Telephony extends AppCompatActivity {
 	TelephonyManager telephonyManager;
-	TextView textOut;
+//	TextView textOut;
+	private TextView r = null;
+	private Button read = null;
+	private Button sim = null;
+	public StringBuilder textOut = new StringBuilder();
+	public final static String PHONE_STATE = "phonestate.txt";
+	public final static String SIM_INFO = "SIMInfo.txt";
+	public final static String DEVICE_INFO = "deviceinfo.txt";
 
 	@RequiresApi(api = Build.VERSION_CODES.M)
 	@Override
@@ -30,7 +50,18 @@ public class Telephony extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_telephony);
 
-		textOut = (TextView) findViewById(R.id.textOut);
+//		textOut = (TextView) findViewById(R.id.textOut);
+		r = (TextView) findViewById(R.id.textOut);
+
+		read = (Button) findViewById(R.id.read);
+		read.setOnClickListener((View v) -> {
+			r.setText(readFromFile(PHONE_STATE, Telephony.this));
+		});
+
+		sim = (Button) findViewById(R.id.read_sim);
+		sim.setOnClickListener((View v) -> {
+			r.setText(readFromFile(SIM_INFO, Telephony.this));
+		});
 
 		// Get the telephony manager
 		telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -45,6 +76,7 @@ public class Telephony extends AppCompatActivity {
 						| PhoneStateListener.LISTEN_SERVICE_STATE);
 
 		int simState = telephonyManager.getSimState();
+
 		String s = null;
 		switch (simState) {
 			case TelephonyManager.SIM_STATE_ABSENT:
@@ -86,48 +118,63 @@ public class Telephony extends AppCompatActivity {
 				break;
 		}
 		textOut.append(String.format("\nSim State: %s", s));
-
-		// deviceInfo.txt
+		writeToFile(SIM_INFO, textOut.toString(), Telephony.this);
 	}
 
 	class PhoneListener extends PhoneStateListener {
+		DateFormat df = new SimpleDateFormat("HH:mm:ss");
 		String stateString = "N/A";
 
 		public void onCallStateChanged(int state, String incomingNumber) {
+			Calendar rn = Calendar.getInstance();
 			switch (state) {
 				case TelephonyManager.CALL_STATE_IDLE:
-					stateString = "Idle";
+					stateString = "Idle at: " + df.format(rn.getTime());
 					break;
 				case TelephonyManager.CALL_STATE_RINGING:
-					stateString = "Ringing";
+					stateString = "Ringing at: " + df.format(rn.getTime());
 					break;
 			}
-			textOut.append(String.format("\nonCallStateChanged: %s", stateString));
+			String t = String.format("\nonCallStateChanged: %s", stateString);
+			writeToFile(PHONE_STATE, t, Telephony.this);
 		}
 
 		public void onCallForwardingIndicatorChanged(boolean cfi) {
+			Calendar rn = Calendar.getInstance();
 			if (cfi)
-				stateString = "true";
+				stateString = "true  at: " + df.format(rn.getTime());
 			else
-				stateString = "false";
-			textOut.append(String.format("\nonCallForwardingIndicator: %s", stateString));
+				stateString = "false  at: " + df.format(rn.getTime());
+			String t = String.format("\nonCallForwardingIndicator: %s", stateString);
+			writeToFile(PHONE_STATE, t, Telephony.this);
 		}
 
 		public void onCellInfoChanged(List<CellInfo> cellInfo) {
-			textOut.append(String.format("\nonCellInfoChanged: %s", cellInfo));
+			Calendar rn = Calendar.getInstance();
+			String t = String.format("\nonCellInfoChanged: %s", cellInfo + " at: "
+					+ df.format(rn.getTime()));
+			writeToFile(PHONE_STATE, t, Telephony.this);
 		}
 
 		public void onCellLocationChanged(CellLocation location) {
-			textOut.append(String.format("\nonCellLocationChanged: %s", location.toString()));
+			Calendar rn = Calendar.getInstance();
+//			textOut.append(String.format("\nonCellLocationChanged: %s", location.toString() + " at: "
+//					+ df.format(rn.getTime())));
+			String t = String.format("\nonCellLocationChanged: %s", location.toString() + " at: "
+					+ df.format(rn.getTime()));
+			writeToFile(PHONE_STATE, t, Telephony.this);
 		}
 
 		public void onDataActivity(int direction) {
-			textOut.append(String.format("\nonDataActivity: %s", String.valueOf(direction)));
+			Calendar rn = Calendar.getInstance();
+			String t = String.format("\nonDataActivity: %s", String.valueOf(direction) + " at: "
+					+ df.format(rn.getTime()));
+			writeToFile(PHONE_STATE, t, Telephony.this);
 		}
 
 		public void onServiceStateChanged (ServiceState state) {
+			Calendar rn = Calendar.getInstance();
 			stateString = "N/A";
-
 			switch (state.getState()) {
 				case ServiceState.STATE_EMERGENCY_ONLY:
 					stateString = "EMERGENCY ONLY!";
@@ -142,7 +189,54 @@ public class Telephony extends AppCompatActivity {
 					stateString = "POWER OFF!";
 					break;
 			}
-			textOut.append(String.format("\nonDataActivity: %s", stateString));
+			String t = String.format("\nonDataActivity: %s", stateString + " at: "
+					+ df.format(rn.getTime()));
+			writeToFile(PHONE_STATE, t, Telephony.this);
 		}
+
+		public void writeToFile(String fname, String fcontent, Context context) {
+			FileOutputStream outputStream;
+			try {
+				outputStream = openFileOutput(fname, context.MODE_APPEND);
+				outputStream.write(fcontent.getBytes());
+				outputStream.close();
+			} catch (Exception e) {
+				Log.i("File", "exception", e);
+			}
+		}
+	}
+
+	public void writeToFile(String fname, String fcontent, Context context) {
+		FileOutputStream outputStream;
+		try {
+			outputStream = openFileOutput(fname, context.MODE_PRIVATE);
+			outputStream.write(fcontent.getBytes());
+			outputStream.close();
+		} catch (Exception e) {
+			Log.i("File", "exception", e);
+		}
+	}
+
+	public String readFromFile(String fname, Context context) {
+		String contents = null;
+		try {
+			FileInputStream fis = context.openFileInput(fname);
+			InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
+			StringBuilder s = new StringBuilder();
+			try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+				String line = reader.readLine();
+				while (line != null) {
+					s.append(line).append('\n');
+					line = reader.readLine();
+				}
+			} catch (IOException e) {
+				Log.i("TAG", "io exception", e);
+			} finally {
+				contents = s.toString();
+			}
+		} catch (FileNotFoundException e) {
+			Log.i("TAG", "File not found!", e);
+		}
+		return contents;
 	}
 }
